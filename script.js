@@ -1,6 +1,5 @@
 const socket = new WebSocket("ws://127.0.0.1:3000/webSocket", "protocoleOne");
 
-socket.write() //envoie d'un token
 let connect = false;
 
 let data = {
@@ -8,6 +7,7 @@ let data = {
     speed2 : 0,
     direction1 : 0,
     direction2 : 0,
+    token: ""
 }
 
 window.addEventListener('load', function () {
@@ -19,14 +19,20 @@ window.addEventListener('load', function () {
 })
 
 socket.onopen = () => {
-    connect = true;
+    socket.send(JSON.stringify({token: data.token}));
+}
+
+socket.onmessage = (msg) => {
+    data.token = JSON.parse(msg.data).token;
+    if (data.token !== "")
+        connect = true;
 }
 
 setInterval(() => {
     if (connect) {
         socket.send(JSON.stringify(data));
     }
-}, 50);
+}, 200);
 
 function changeDirection(d) {
     switch (d) {
