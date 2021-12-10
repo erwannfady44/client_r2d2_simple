@@ -1,4 +1,4 @@
-const socket = new WebSocket("ws://127.0.0.1:3000/webSocket", "protocoleOne");
+const socket = new WebSocket("ws://localhost:3000/webSocket", "protocoleOne");
 
 let connect = false;
 
@@ -23,16 +23,23 @@ socket.onopen = () => {
 }
 
 socket.onmessage = (msg) => {
-    data.token = JSON.parse(msg.data).token;
-    if (data.token !== "")
+    const receivedData = JSON.parse(msg.data);
+
+    if (receivedData.err) {
+        console.log(receivedData)
+    }
+    else if (receivedData.token !== "") {
+        data.token = receivedData.token;
+        console.log(receivedData.token)
         connect = true;
+    }
 }
 
 setInterval(() => {
     if (connect) {
         socket.send(JSON.stringify(data));
     }
-}, 200);
+}, 1000);
 
 function changeDirection(d) {
     switch (d) {
